@@ -1,0 +1,13 @@
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/reports
+cucumber-report.json
+/docs
+.env
+/screenshots
+
+# Ignore the mock API database file
+db.json

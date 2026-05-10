@@ -1,0 +1,26 @@
+{
+  "name": "playwright-mock-api-framework",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/luisdavidparra/playwright-mock-api-framework#readme",
+  "bugs": {
+    "url": "https://github.com/luisdavidparra/playwright-mock-api-framework/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luisdavidparra/playwright-mock-api-framework.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "mock": "npx json-server mock-server/db.json"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^12.8.3",
+    "@playwright/test": "^1.60.0",
+    "http-server": "^14.1.1"
+  }
+}
