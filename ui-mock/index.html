@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mock UI</title>
+  </head>
+  <body>
+    <h1>Mock UI Item List</h1>
+
+    <h2>Add New Item</h2>
+    <input id="newItem" placeholder="Item Name" />
+    <button id="addBtn">Add</button>
+
+    <h2>Item List</h2>
+    <ul id="items"></ul>
+
+    <script>
+      const API_URL = "http://localhost:3000/items";
+
+      async function loadItems() {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+
+        const list = document.getElementById("items");
+        list.innerHTML = "";
+
+        data.forEach((item) => {
+          const li = document.createElement("li");
+          li.textContent = item.name;
+          list.appendChild(li);
+        });
+      }
+
+      document.getElementById("addBtn").addEventListener("click", async () => {
+        const name = document.getElementById("newItem").value;
+
+        await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, status: "active" }),
+        });
+
+        loadItems();
+      });
+
+      loadItems();
+    </script>
+  </body>
+</html>

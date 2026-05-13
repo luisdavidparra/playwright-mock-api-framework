@@ -15,8 +15,9 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "playwright test",
-    "mock": "npx json-server mock-server/db.json"
+    "test": "npx playwright test",
+    "mock": "npx json-server mock-server/db.json",
+    "start": "npx http-server ui-mock -p 8080"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^12.8.3",
