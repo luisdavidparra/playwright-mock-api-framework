@@ -26,13 +26,83 @@
 
         data.forEach((item) => {
           const li = document.createElement("li");
-          li.textContent = item.name;
+
+          // TOGGLE ITEM STATUS
+          const toggleStatusCheck = document.createElement("input");
+          toggleStatusCheck.type = "checkbox";
+          toggleStatusCheck.checked = item.status === "active";
+
+          toggleStatusCheck.addEventListener("change", async () => {
+            const newStatus = toggleStatusCheck.checked ? "active" : "inactive";
+
+            await fetch(`${API_URL}/${item.id}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                name: item.name,
+                status: newStatus,
+              }),
+            });
+
+            loadItems();
+          });
+
+          // ITEM NAME
+          const nameSpan = document.createElement("span");
+          nameSpan.textContent = " " + item.name + " ";
+
+          // EDIT BUTTON
+          const editBtn = document.createElement("button");
+          editBtn.textContent = "Edit";
+
+          editBtn.addEventListener("click", () => {
+            const input = document.createElement("input");
+            input.value = item.name;
+
+            const saveBtn = document.createElement("button");
+            saveBtn.textContent = "Save";
+
+            li.innerHTML = "";
+            li.appendChild(input);
+            li.appendChild(saveBtn);
+
+            saveBtn.addEventListener("click", async () => {
+              await fetch(`${API_URL}/${item.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  name: input.value,
+                  status: item.status,
+                }),
+              });
+
+              loadItems();
+            });
+          });
+
+          // DELETE BUTTON
+          const deleteBtn = document.createElement("button");
+          deleteBtn.textContent = "Delete";
+          deleteBtn.style.marginLeft = "10px";
+          deleteBtn.addEventListener("click", async () => {
+            await fetch(`${API_URL}/${item.id}`, { method: "DELETE" });
+            loadItems();
+          });
+
+          li.appendChild(toggleStatusCheck);
+          li.appendChild(nameSpan);
+          li.appendChild(deleteBtn);
+          li.appendChild(editBtn);
+
           list.appendChild(li);
         });
       }
 
+      // CREATE NEW ITEM METHOD
       document.getElementById("addBtn").addEventListener("click", async () => {
         const name = document.getElementById("newItem").value;
+
+        if (!name.trim()) return;
 
         await fetch(API_URL, {
           method: "POST",
@@ -40,6 +110,7 @@
           body: JSON.stringify({ name, status: "active" }),
         });
 
+        document.getElementById("newItem").value = "";
         loadItems();
       });
 
