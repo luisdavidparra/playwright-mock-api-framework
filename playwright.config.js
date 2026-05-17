@@ -18,11 +18,6 @@ module.exports = defineConfig({
     screenshot: "only-on-failure",
   },
 
-  use: {
-    trace: "on-first-retry",
-    screenshot: "only-on-failure",
-  },
-
   projects: [
     {
       name: "chromium",

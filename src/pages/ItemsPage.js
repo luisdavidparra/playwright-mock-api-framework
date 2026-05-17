@@ -25,6 +25,10 @@ class ItemsPage {
     const items = await this.getItems();
     return items.some((text) => text.includes(name));
   }
+
+  async getItemRow(name) {
+    return this.page.locator("#items li", { hasText: name });
+  }
 }
 
 module.exports = { ItemsPage };
