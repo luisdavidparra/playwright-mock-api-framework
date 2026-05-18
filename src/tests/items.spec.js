@@ -3,13 +3,12 @@ const { ItemsPage } = require("../pages/ItemsPage");
 const { getItemByName, deleteItemById } = require("../helpers/api");
 
 test.describe("Items UI", () => {
-  let newItemName;
+  let createdItemId;
 
   test.afterEach(async () => {
-    if (!newItemName) return;
+    if (!createdItemId) return;
 
-    const item = await getItemByName(newItemName);
-    if (item) await deleteItemById(item.id);
+    if (createdItemId) await deleteItemById(createdItemId);
   });
 
   test("should add a new item", async ({ page }) => {
@@ -17,9 +16,30 @@ test.describe("Items UI", () => {
     await itemsPage.goto();
 
     const random = Math.floor(Math.random() * 100000);
-    newItemName = `newItem${random}`;
-    await itemsPage.addItem(newItemName);
+    const newItemName = `newItem${random}`;
 
-    expect(await itemsPage.getItemRow(newItemName)).toBeVisible();
+    const itemId = await itemsPage.addItem(newItemName);
+    createdItemId = itemId;
+
+    await expect(itemsPage.getItemNameSpanById(itemId)).toHaveText(newItemName);
+  });
+
+  test("should edit an existing item", async ({ page }) => {
+    const itemsPage = new ItemsPage(page);
+    await itemsPage.goto();
+
+    const random = Math.floor(Math.random() * 100000);
+    const originalName = `itemToEdit${random}`;
+    const updatedName = `updated_${originalName}`;
+
+    const itemId = await itemsPage.addItem(originalName);
+    createdItemId = itemId;
+
+    await expect(itemsPage.getItemNameSpanById(itemId)).toHaveText(originalName);
+
+    await itemsPage.editItem(updatedName, itemId);
+
+    await expect(itemsPage.getItemNameSpanById(itemId)).toHaveText(updatedName);
+    await expect(itemsPage.getItemNameSpanById(itemId)).not.toHaveText(originalName);
   });
 });

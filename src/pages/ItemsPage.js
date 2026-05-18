@@ -13,7 +13,17 @@ class ItemsPage {
   // CREATE
   async addItem(name) {
     await this.inputNewItem.fill(name);
-    await this.addButton.click();
+
+    const [response] = await Promise.all([
+      this.page.waitForResponse(
+        (res) => res.url().includes("/items") && res.request().method() === "POST",
+      ),
+      this.addButton.click(),
+    ]);
+
+    const createdItem = await response.json();
+
+    return createdItem.id; // Return created item's ID for later use in test
   }
 
   // READ
@@ -26,8 +36,30 @@ class ItemsPage {
     return items.some((text) => text.includes(name));
   }
 
-  async getItemRow(name) {
+  getItemRow(name) {
     return this.page.locator("#items li", { hasText: name });
+  }
+
+  getItemRowById(id) {
+    return this.page.locator(`[id="${id}"]`);
+  }
+
+  getItemNameSpanById(id) {
+    return this.page.locator(`[id="${id}"] span`);
+  }
+
+  // UPDATE
+  async editItem(newName, id) {
+    const row = this.getItemRowById(id);
+
+    const editBtn = row.locator(".editBtn");
+    await editBtn.click();
+
+    const input = row.locator("input");
+    await input.fill(newName);
+
+    const saveBtn = row.locator(".saveBtn");
+    await saveBtn.click();
   }
 }
 
