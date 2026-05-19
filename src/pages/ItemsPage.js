@@ -61,6 +61,13 @@ class ItemsPage {
     const saveBtn = row.locator(".saveBtn");
     await saveBtn.click();
   }
+
+  // DELETE
+  async deleteItemById(id) {
+    const row = this.getItemRowById(id);
+    const deleteBtn = row.locator(".deleteBtn");
+    await deleteBtn.click();
+  }
 }
 
 module.exports = { ItemsPage };
