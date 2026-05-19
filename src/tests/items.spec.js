@@ -25,7 +25,7 @@ test.describe("Items UI", () => {
     await expect(itemsPage.getItemNameSpanById(itemId)).toHaveText(newItemName);
 
     const backendItem = await getItemById(itemId);
-    await expect(backendItem.name).toBe(newItemName);
+    expect(backendItem.name).toBe(newItemName);
   });
 
   test("should edit an existing item", async ({ page }) => {
@@ -47,7 +47,7 @@ test.describe("Items UI", () => {
     await expect(itemsPage.getItemNameSpanById(itemId)).not.toHaveText(originalName);
 
     const backendItem = await getItemById(itemId);
-    await expect(backendItem.name).toBe(updatedName);
+    expect(backendItem.name).toBe(updatedName);
   });
 
   test("should delete an existing item", async ({ page }) => {
@@ -67,6 +67,39 @@ test.describe("Items UI", () => {
     await expect(itemsPage.getItemRowById(itemId)).not.toBeVisible();
 
     const backendItem = await getItemById(itemId);
-    await expect(backendItem).toBeUndefined();
+    expect(backendItem).toBeUndefined();
+  });
+
+  test("should toggle item status between active and inactive", async ({ page }) => {
+    const itemsPage = new ItemsPage(page);
+    await itemsPage.goto();
+
+    const random = Math.floor(Math.random() * 100000);
+    const itemName = `toggleItem${random}`;
+
+    const itemId = await itemsPage.addItem(itemName);
+    createdItemId = itemId;
+
+    const checkbox = itemsPage.getCheckboxById(itemId);
+
+    // NewItems starts with active status
+    await expect(checkbox).toBeChecked();
+
+    let backendItem = await getItemById(itemId);
+    expect(backendItem.status).toBe("active");
+
+    // Toggle to inactive status
+    await itemsPage.toggleStatusById(itemId);
+    await expect(checkbox).not.toBeChecked();
+
+    backendItem = await getItemById(itemId);
+    expect(backendItem.status).toBe("inactive");
+
+    // Toggle back to active status
+    await itemsPage.toggleStatusById(itemId);
+    await expect(checkbox).toBeChecked();
+
+    backendItem = await getItemById(itemId);
+    expect(backendItem.status).toBe("active");
   });
 });

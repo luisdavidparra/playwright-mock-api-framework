@@ -48,6 +48,10 @@ class ItemsPage {
     return this.page.locator(`[id="${id}"] span`);
   }
 
+  getCheckboxById(id) {
+    return this.getItemRowById(id).locator(".toggleStatusChk");
+  }
+
   // UPDATE
   async editItem(newName, id) {
     const row = this.getItemRowById(id);
@@ -67,6 +71,14 @@ class ItemsPage {
     const row = this.getItemRowById(id);
     const deleteBtn = row.locator(".deleteBtn");
     await deleteBtn.click();
+  }
+
+  // TOGGLE
+  async toggleStatusById(id) {
+    const row = this.getItemRowById(id);
+    const checkbox = row.locator(".toggleStatusChk");
+
+    checkbox.click();
   }
 }
 
