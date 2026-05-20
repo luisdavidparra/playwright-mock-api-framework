@@ -4,6 +4,15 @@ const { getItemById, deleteItemById } = require("../helpers/api");
 
 test.describe("Items UI", () => {
   let createdItemId;
+  let itemsPage;
+
+  test.beforeEach(async ({ page }) => {
+    itemsPage = new ItemsPage(page);
+    await itemsPage.goto();
+
+    // Wait until the page finishes all network requests
+    await page.waitForLoadState("networkidle");
+  });
 
   test.afterEach(async () => {
     if (createdItemId) {
@@ -12,10 +21,7 @@ test.describe("Items UI", () => {
     }
   });
 
-  test("should add a new item", async ({ page }) => {
-    const itemsPage = new ItemsPage(page);
-    await itemsPage.goto();
-
+  test("should add a new item", async () => {
     const random = Math.floor(Math.random() * 100000);
     const newItemName = `newItem${random}`;
 
@@ -28,10 +34,7 @@ test.describe("Items UI", () => {
     expect(backendItem.name).toBe(newItemName);
   });
 
-  test("should edit an existing item", async ({ page }) => {
-    const itemsPage = new ItemsPage(page);
-    await itemsPage.goto();
-
+  test("should edit an existing item", async () => {
     const random = Math.floor(Math.random() * 100000);
     const originalName = `itemToEdit${random}`;
     const updatedName = `updated_${originalName}`;
@@ -50,10 +53,7 @@ test.describe("Items UI", () => {
     expect(backendItem.name).toBe(updatedName);
   });
 
-  test("should delete an existing item", async ({ page }) => {
-    const itemsPage = new ItemsPage(page);
-    await itemsPage.goto();
-
+  test("should delete an existing item", async () => {
     const random = Math.floor(Math.random() * 100000);
     const newItemName = `itemToDelete${random}`;
 
@@ -70,10 +70,7 @@ test.describe("Items UI", () => {
     expect(backendItem).toBeUndefined();
   });
 
-  test("should toggle item status between active and inactive", async ({ page }) => {
-    const itemsPage = new ItemsPage(page);
-    await itemsPage.goto();
-
+  test("should toggle item status between active and inactive", async () => {
     const random = Math.floor(Math.random() * 100000);
     const itemName = `toggleItem${random}`;
 
