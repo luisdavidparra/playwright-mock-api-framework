@@ -1,13 +1,18 @@
+const selectors = require("../selectors/items.selectors");
+
 class ItemsPage {
   constructor(page) {
     this.page = page;
-    this.inputNewItem = page.locator("#newItem");
-    this.addButton = page.locator("#addBtn");
-    this.itemsListName = page.locator("#items li span");
+    this.inputNewItem = page.locator(selectors.inputNewItem);
+    this.addButton = page.locator(selectors.addButton);
+    this.itemsListNames = page.locator(selectors.itemsListNames);
   }
 
   async goto() {
     await this.page.goto("http://localhost:8080");
+
+    // Wait until the page finishes all network requests
+    await this.page.waitForLoadState("networkidle");
   }
 
   // CREATE
@@ -38,7 +43,10 @@ class ItemsPage {
 
   // READ
   async getItemsName() {
-    const spans = this.itemsListName;
+    const spans = this.itemsListNames;
+
+    if ((await spans.count()) === 0) return [];
+
     const count = await spans.count();
     const names = [];
 
@@ -60,44 +68,45 @@ class ItemsPage {
   }
 
   getItemRowById(id) {
-    return this.page.locator(`[id="${id}"]`);
+    return this.page.locator(selectors.itemRowById(id));
   }
 
   getItemNameSpanById(id) {
-    return this.page.locator(`[id="${id}"] span`);
+    return this.page.locator(selectors.itemNameSpanById(id));
   }
 
   getCheckboxById(id) {
-    return this.getItemRowById(id).locator(".toggleStatusChk");
+    return this.page.locator(selectors.itemCheckboxById(id));
   }
 
   // UPDATE
   async editItem(newName, id) {
-    const row = this.getItemRowById(id);
-
-    const editBtn = row.locator(".editBtn");
+    const editBtn = this.page.locator(selectors.itemEditButtonById(id));
     await editBtn.click();
 
-    const input = row.locator("input");
+    const input = this.page.locator(selectors.itemInputById(id));
     await input.fill(newName);
 
-    const saveBtn = row.locator(".saveBtn");
+    const saveBtn = this.page.locator(selectors.itemSaveButtonById(id));
     await saveBtn.click();
   }
 
   // DELETE
   async deleteItemById(id) {
-    const row = this.getItemRowById(id);
-    const deleteBtn = row.locator(".deleteBtn");
+    const deleteBtn = this.page.locator(selectors.itemDeleteButtonById(id));
     await deleteBtn.click();
   }
 
   // TOGGLE
   async toggleStatusById(id) {
-    const row = this.getItemRowById(id);
-    const checkbox = row.locator(".toggleStatusChk");
+    const checkbox = this.page.locator(selectors.itemCheckboxById(id));
 
-    checkbox.click();
+    const [response] = await Promise.all([
+      this.page.waitForResponse(
+        (res) => res.url().includes(`/items/${id}`) && res.request().method() === "PUT",
+      ),
+      checkbox.click(),
+    ]);
   }
 }
 

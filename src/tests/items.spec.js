@@ -9,9 +9,6 @@ test.describe("Items UI", () => {
   test.beforeEach(async ({ page }) => {
     itemsPage = new ItemsPage(page);
     await itemsPage.goto();
-
-    // Wait until the page finishes all network requests
-    await page.waitForLoadState("networkidle");
   });
 
   test.afterEach(async () => {
@@ -30,8 +27,8 @@ test.describe("Items UI", () => {
 
     await expect(itemsPage.getItemNameSpanById(itemId)).toHaveText(newItemName);
 
-    const backendItem = await getItemById(itemId);
-    expect(backendItem.name).toBe(newItemName);
+    const apiItem = await getItemById(itemId);
+    expect(apiItem.name).toBe(newItemName);
   });
 
   test("should edit an existing item", async () => {
@@ -49,8 +46,8 @@ test.describe("Items UI", () => {
     await expect(itemsPage.getItemNameSpanById(itemId)).toHaveText(updatedName);
     await expect(itemsPage.getItemNameSpanById(itemId)).not.toHaveText(originalName);
 
-    const backendItem = await getItemById(itemId);
-    expect(backendItem.name).toBe(updatedName);
+    const apiItem = await getItemById(itemId);
+    expect(apiItem.name).toBe(updatedName);
   });
 
   test("should delete an existing item", async () => {
@@ -66,8 +63,8 @@ test.describe("Items UI", () => {
 
     await expect(itemsPage.getItemRowById(itemId)).not.toBeVisible();
 
-    const backendItem = await getItemById(itemId);
-    expect(backendItem).toBeUndefined();
+    const apiItem = await getItemById(itemId);
+    expect(apiItem).toBeUndefined();
   });
 
   test("should toggle item status between active and inactive", async () => {
@@ -82,22 +79,22 @@ test.describe("Items UI", () => {
     // NewItems starts with active status
     await expect(checkbox).toBeChecked();
 
-    let backendItem = await getItemById(itemId);
-    expect(backendItem.status).toBe("active");
+    let apiItem = await getItemById(itemId);
+    expect(apiItem.status).toBe("active");
 
     // Toggle to inactive status
     await itemsPage.toggleStatusById(itemId);
     await expect(checkbox).not.toBeChecked();
 
-    backendItem = await getItemById(itemId);
-    expect(backendItem.status).toBe("inactive");
+    apiItem = await getItemById(itemId);
+    expect(apiItem.status).toBe("inactive");
 
     // Toggle back to active status
     await itemsPage.toggleStatusById(itemId);
     await expect(checkbox).toBeChecked();
 
-    backendItem = await getItemById(itemId);
-    expect(backendItem.status).toBe("active");
+    apiItem = await getItemById(itemId);
+    expect(apiItem.status).toBe("active");
   });
 
   test("should not add an item when input is empty", async () => {
