@@ -3,7 +3,7 @@ class ItemsPage {
     this.page = page;
     this.inputNewItem = page.locator("#newItem");
     this.addButton = page.locator("#addBtn");
-    this.itemsList = page.locator("#items li");
+    this.itemsListName = page.locator("#items li span");
   }
 
   async goto() {
@@ -26,14 +26,33 @@ class ItemsPage {
     return createdItem.id; // Return created item's ID for later use in test
   }
 
+  async tryAddEmptyItem() {
+    await this.inputNewItem.fill("");
+    await this.addButton.click();
+  }
+
+  async tryAddWhitespaceItem() {
+    await this.inputNewItem.fill("   ");
+    await this.addButton.click();
+  }
+
   // READ
-  async getItems() {
-    return this.itemsList.allTextContents();
+  async getItemsName() {
+    const spans = this.itemsListName;
+    const count = await spans.count();
+    const names = [];
+
+    for (let i = 0; i < count; i++) {
+      const text = await spans.nth(i).innerText();
+      names.push(text.trim());
+    }
+
+    return names;
   }
 
   async itemExists(name) {
-    const items = await this.getItems();
-    return items.some((text) => text.includes(name));
+    const items = await this.getItemsName();
+    return items.some((text) => text === name);
   }
 
   getItemRow(name) {

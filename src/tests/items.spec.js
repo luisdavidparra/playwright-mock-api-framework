@@ -1,6 +1,6 @@
 const { test, expect } = require("@playwright/test");
 const { ItemsPage } = require("../pages/ItemsPage");
-const { getItemById, deleteItemById } = require("../helpers/api");
+const { getAllItems, getItemById, deleteItemById } = require("../helpers/api");
 
 test.describe("Items UI", () => {
   let createdItemId;
@@ -98,5 +98,37 @@ test.describe("Items UI", () => {
 
     backendItem = await getItemById(itemId);
     expect(backendItem.status).toBe("active");
+  });
+
+  test("should not add an item when input is empty", async () => {
+    const initialUIItems = (await itemsPage.getItemsName()).length;
+    const initialAPIItems = (await getAllItems()).length;
+
+    await itemsPage.tryAddEmptyItem();
+
+    const finalUIItems = (await itemsPage.getItemsName()).length;
+    const finalAPIItems = (await getAllItems()).length;
+
+    expect(initialUIItems).toBe(finalUIItems);
+    expect(initialAPIItems).toBe(finalAPIItems);
+
+    const names = await itemsPage.getItemsName();
+    expect(names).not.toContain("");
+  });
+
+  test("should not add an item when input is whitespace", async () => {
+    const initialUIItems = (await itemsPage.getItemsName()).length;
+    const initialAPIItems = (await getAllItems()).length;
+
+    await itemsPage.tryAddWhitespaceItem();
+
+    const finalUIItems = (await itemsPage.getItemsName()).length;
+    const finalAPIItems = (await getAllItems()).length;
+
+    expect(initialUIItems).toBe(finalUIItems);
+    expect(initialAPIItems).toBe(finalAPIItems);
+
+    const names = await itemsPage.getItemsName();
+    expect(names).not.toContain("");
   });
 });

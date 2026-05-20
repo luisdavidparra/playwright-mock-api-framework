@@ -2,11 +2,12 @@ const { defineConfig, devices } = require("@playwright/test");
 
 module.exports = defineConfig({
   testDir: "./src/tests",
-  fullyParallel: true,
+  fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 2 : undefined,
   reporter: [["html", { open: "on-failure" }], ["list"]],
+  retries: 2,
 
   expect: {
     timeout: 5000,
