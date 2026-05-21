@@ -38,7 +38,7 @@ jobs:
         run: sleep 3
 
       - name: Run Playwright tests
-        run: npm run test
+        run: npx playwright test
 
       - name: Upload Playwright report
         if: always()
